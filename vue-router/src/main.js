@@ -2,7 +2,16 @@
 // (runtime-only or standalone) has been set in webpack.base.conf with an alias.
 import Vue from 'vue'
 // import App from './App'
-import router from './Router'
+//import router from './Router'
+import store from './store'
+import vuex from './vuex'
+
+new Vue({
+    el:'#app',
+    store,
+    render: xx => xx(vuex)
+})
+
 // import transition from './transition'
 // new Vue({
 //     el: '#demo',

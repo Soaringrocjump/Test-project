@@ -2,11 +2,13 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 Vue.use(VueRouter)
 
+//第五次例子
+import Transition from './transition'
 const home = { 
     template: `
         <div>
             <div>home</div>
-            <p>This is home</p>
+            <p>This is home {{$route.query.a}} </p>
         </div>
     `
 }
@@ -18,13 +20,37 @@ const parent = {
         </div>
     `
 }
+const hook = { 
+    template: '<div>钩子 内容</div>' ,
+    beforeRouteEnter:(to,from,next)=>{
+        console.log(to)
+        console.log(from)
+        next() //可以  next(false) 不可以   next()一定要写 不然不会进入路由,()内可以传入参数eg:path:'./'
+    },
+    beforeRouteEnteLeave:(to,from,next)=>{
+        console.log(to)
+        console.log(from)
+        next() //可以  next(false) 不可以   next()一定要写 不然不会进入路由,()内可以传入参数eg:path:'./'
+    }   
+
+}
 
 const router = new VueRouter({
-    mode: 'history',
+    mode: 'hash',
     base: __dirname,
     routes: [
         {path:'/',component:home},
-        {path: '/parent',component:parent}
+        {path:'/parent',component:parent},
+        {path:'/transition',component:Transition},
+        {
+            path:'/hook',
+            component:hook,
+            beforeEnter:(to,from,next)=>{
+                console.log(to)
+                console.log(from)
+                next() //可以  next(false) 不可以   next()一定要写 不然不会进入路由,()内可以传入参数eg:path:'./'
+            }
+        }
     ]
 })
 //过渡动画
@@ -41,7 +67,11 @@ new Vue({
             <ul>
                 <li><router-link to="/">/home-slideUp</router-link></li>
                 <li><router-link to="/parent">/parent-slideDown</router-link></li>
+                <li><router-link to="/transition">/transition</router-link></li>
+                <li><router-link to="/hook">/钩子</router-link></li>
             </ul>
+            <button @click="backHome">返回Home</button>
+            <button @click="query">queryHome</button>
             <transition :name="animate" mode="out-in">
                 <router-view></router-view>
             </transition>
@@ -54,10 +84,21 @@ new Vue({
             if(to.path == '/parent'){
                 this.animate = 'slideDown';
                 console.log("slideDown")
-            }else{
+            }else if(to.path == '/'){
                 this.animate = 'slideUp';
                 console.log("slideUp")
+            }else{
+                this.animate = 'fade';
+                console.log("fade")
             }
+        }
+    },
+    methods: {
+        backHome(){
+            router.push({path:'/'})
+        },
+        query(){
+            router.push({path:'/',query:{a:1,b:2}})
         }
     }
 }).$mount("#app")
@@ -77,6 +118,11 @@ new Vue({
 // const firstSecond = { template: '<div>first-second 内容 {{$route.params.id}}</div>' }
 // const firstThird = { template: '<div>first-third 内容 {{$route.params.id}}</div>' }
 // const second = { template: '<div>second 内容</div>' }
+// const page404 = {
+//     template: `
+//         <div><h1>error:404</h1></div>
+//     `
+// }
 
 // const router = new VueRouter({
 //     mode: 'history',
@@ -105,7 +151,8 @@ new Vue({
 //                     return '/'
 //                 }
 //             }
-//         }
+//         },
+//         {path: '*',component:page404}   //404路由一定要放到最下面
 //     ]
 // })
 
@@ -120,13 +167,14 @@ new Vue({
 //                 <ol>
 //                     <li><router-link to="/first/f-first">f-first</router-link></li>
 //                     <li><router-link to="/first/f-second">f-second</router-link></li>
-//                     <li><router-link to="/first/f-third">f-third 重定向</router-link></li>
+//                     <li><router-link to="/first/f-third">f-third 重定向至f-first</router-link></li>
 //                 </ol>
 //                 <li><router-link to="/second">/second</router-link></li>
-//                 <li><router-link to="/gogo">/gogo 别名</router-link></li>
-//                 <li><router-link to="/aaa/123">/aaa</router-link></li>
-//                 <li><router-link to="/bbb/456">/bbb 重定向</router-link></li>
-//                 <li><router-link to="/ccc/001">/ccc 重定向</router-link></li>
+//                 <li><router-link to="/gogo">/gogo 别名second</router-link></li>
+//                 <li><router-link to="/aaa/123">/aaa 用的f-first模板</router-link></li>
+//                 <li><router-link to="/bbb/456">/bbb 重定向至aaa</router-link></li>
+//                 <li><router-link to="/ccc/001">/ccc 重定向home</router-link></li>
+//                 <li><router-link to="/suibian">/不存在页面</router-link></li>
 //             </ol>
 //             <router-view></router-view>
 //         </div>
@@ -329,12 +377,15 @@ new Vue({
 
 
 //笔记
+// new router 的mode属性和base属性
+// mode: 'history/hash'  属性为hash时，url为localhost:8080/#/page×× | 属性为history时，url为localhost:8080/page××
+// base: __dirname  表示基于当前路径 
 //:to里 name和params一起用；path和query一起用  语法 :to="{path:'../',params:{id:1,value:'abc'}}"
 //编程式导航 
 //<router-link :to="...">、router.push(...)和router.replace(...)用法差不多  
 //eg: <router-link :to="{path:'../',params:{id:1,value:'abc'}}"></router-link> | router.push({path:'../',params:{id:1,value:'abc'}) | router.replace({path:'../',params:{id:1,value:'abc'})
 //区别  router-link和router.push两个方法会向 history 栈添加一个新的记录，所以，当用户点击浏览器后退按钮时，则回到之前的 URL。   router.replace不会向 history 添加新记录，而是跟它的方法名一样 —— 替换掉当前的 history 记录。
-//router.go(n)  该方法的参数是一个整数，意思是在 history 记录中向前或者后退多少步，类似 window.history.go(n)。
+//操作 History  router.go(n)  该方法的参数是一个整数，意思是在 history 记录中向前或者后退多少步，类似 window.history.go(n)。
 //路由传参  routes里一个路由里path内容前加冒号 则被绑定，eg： path: '/first/:userid'。值由router-link/push/replace传入。 eg: <router-link :to='/first/123'></router-link>
 //route和component里的子路由和子模版大于一个时需使用routes和components
 //路由可嵌套，在父路由模板底部加子路由容器<router-view></router-view>即可
@@ -344,7 +395,7 @@ new Vue({
 // <router-view></router-view>
 // <router-view name='a'></router-view>
 // <router-view name='b'></router-view>
-// 在路由表toutes里
+// 在路由表routes里
 // components: {
 //     default: 默认使用的模板,
 //     a: 自定义模板1,
@@ -369,6 +420,10 @@ new Vue({
 //         }
 // //]
 // 主路由是绝对路径需要加/，子路由是相对路径不需要/，如果加了就会连接到主路由上
+// //404页面
+// 当路由访问不存在的页面时，需设置一个路由404页面
+// {path: '*',component:page404}
+// 此路由要放在路由表匹配最下面，因为路由自上而下匹配的，当所有路径都匹配不到时匹配此页面
 //重定向 redirect
 // routes: [
 //     {   path: '/a', 
@@ -405,3 +460,25 @@ new Vue({
 //         判断to的来源动态设置transition绑定的name的值
 //     }
 //  }
+//路由钩子  可以在模板里写也可以在路由表里写
+// 模板里写
+// {
+//     template: ***,
+//     beforeRouteEnter:(to,from,next)=>{
+//         console.log(to)
+//         console.log(from)
+//         next()
+//     },
+//     beforeRouteEnteLeave:(to,from,next)=>{
+//         next()
+//     } 
+// }
+// 路由表里写
+// {
+//     path:'*',
+//     component: **,
+//     beforeEnter:(to,from,next)=>{
+//         next() 
+//     }
+// }
+// 注意：模板中写before和Enter之间加Route | 钩子里面一定要加next(),不然不会进入路由，（）内可以传入参数 eg:next({path:'*'})

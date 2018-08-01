@@ -2,106 +2,170 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 Vue.use(VueRouter)
 
-//第五次例子
-import Transition from './transition'
-const home = { 
-    template: `
-        <div>
-            <div>home</div>
-            <p>This is home {{$route.query.a}} </p>
-        </div>
-    `
-}
-const parent = { 
-    template: `
-        <div>
-            <div>parent</div>
-            <p>This is parent</p>
-        </div>
-    `
-}
-const hook = { 
-    template: '<div>钩子 内容</div>' ,
-    beforeRouteEnter:(to,from,next)=>{
-        console.log(to)
-        console.log(from)
-        next() //可以  next(false) 不可以   next()一定要写 不然不会进入路由,()内可以传入参数eg:path:'./'
-    },
-    beforeRouteEnteLeave:(to,from,next)=>{
-        console.log(to)
-        console.log(from)
-        next() //可以  next(false) 不可以   next()一定要写 不然不会进入路由,()内可以传入参数eg:path:'./'
-    }   
-
-}
+//组件生命周期
+import lifeCycle from './lifeCycle'
+const home = { template: '<div>home 内容</div>' }
+const second = { template: '<div>second 内容</div>' }
 
 const router = new VueRouter({
     mode: 'hash',
     base: __dirname,
     routes: [
         {path:'/',component:home},
-        {path:'/parent',component:parent},
-        {path:'/transition',component:Transition},
-        {
-            path:'/hook',
-            component:hook,
-            beforeEnter:(to,from,next)=>{
-                console.log(to)
-                console.log(from)
-                next() //可以  next(false) 不可以   next()一定要写 不然不会进入路由,()内可以传入参数eg:path:'./'
-            }
-        }
+        {path:'/first',component:lifeCycle},
+        {path:'/second',component:second}
     ]
 })
-//过渡动画
+
 new Vue({
     router,
-    data(){
-        return{
-            animate: 'fade'
-        }
-    },
     template: `
-        <div id="app">
-            <h1>This is transition</h1>
+        <div id="app2">
+            <h1>This is 组件生命周期</h1>
             <ul>
-                <li><router-link to="/">/home-slideUp</router-link></li>
-                <li><router-link to="/parent">/parent-slideDown</router-link></li>
-                <li><router-link to="/transition">/transition</router-link></li>
-                <li><router-link to="/hook">/钩子</router-link></li>
+                <li><router-link to="/">/</router-link></li>
+                <li><router-link to="/first">/first</router-link></li>
+                <li><router-link to="/second">/second</router-link></li>
             </ul>
-            <button @click="backHome">返回Home</button>
-            <button @click="query">queryHome</button>
-            <transition :name="animate" mode="out-in">
-                <router-view></router-view>
-            </transition>
+            <keep-alive>
+            <router-view></router-view>
+            </keep-alive>
         </div>
     `,
-    watch: {
-        '$route'(to,from){
-            console.log(to)
-            console.log(from)
-            if(to.path == '/parent'){
-                this.animate = 'slideDown';
-                console.log("slideDown")
-            }else if(to.path == '/'){
-                this.animate = 'slideUp';
-                console.log("slideUp")
-            }else{
-                this.animate = 'fade';
-                console.log("fade")
-            }
-        }
+    //router-view容器外层加keep-alive后会被缓存 比如切换到first路由点击+号，改变aaa的值，切换到别的路由再回来first后aaa的值则是改变后的值，如果不加keep-alive切换回来aaa为初始值2
+    beforeCreate() {  //已经显示出来了
+        console.log('路由1-beforeCreate 初始化之后')
     },
-    methods: {
-        backHome(){
-            router.push({path:'/'})
-        },
-        query(){
-            router.push({path:'/',query:{a:1,b:2}})
-        }
+    created() {
+        console.log('路由2-created 创建完成')
+    },
+    beforeMount() {
+        console.log('路由3-beforeMount 挂载之前')
+    },
+    mounted() {
+        console.log('路由4-mounted 挂载到DOM')
+    },
+    beforeUpdate() {
+        console.log('路由5-beforeUpdate 数据更新前')
+    },
+    updated() {
+        console.log('路由6-updated 被更新后')
+    },
+    //只有使用<keep-alive>里面的内容会留在内存里</keep-alive>时才会激活7、8项
+    activated() {
+        console.log('7-activated')
+    },
+    deactivated() {
+        console.log('8-deactivated')
+    },
+    beforeDestroy() {
+        console.log('路由9-beforeDestroy 销毁之前')
+    },
+    destroyed() {
+        console.log('路由10-destroyed 销毁之后')
     }
 }).$mount("#app")
+
+//第五次例子
+// import Transition from './transition'
+// const home = { 
+//     template: `
+//         <div>
+//             <div>home</div>
+//             <p>This is home {{$route.query.a}} </p>
+//         </div>
+//     `
+// }
+// const parent = { 
+//     template: `
+//         <div>
+//             <div>parent</div>
+//             <p>This is parent</p>
+//         </div>
+//     `
+// }
+// const hook = { 
+//     template: '<div>钩子 内容</div>' ,
+//     beforeRouteEnter:(to,from,next)=>{
+//         console.log(to)
+//         console.log(from)
+//         next() //可以  next(false) 不可以   next()一定要写 不然不会进入路由,()内可以传入参数eg:path:'./'
+//     },
+//     beforeRouteEnteLeave:(to,from,next)=>{
+//         console.log(to)
+//         console.log(from)
+//         next() //可以  next(false) 不可以   next()一定要写 不然不会进入路由,()内可以传入参数eg:path:'./'
+//     }   
+
+// }
+
+// const router = new VueRouter({
+//     mode: 'hash',
+//     base: __dirname,
+//     routes: [
+//         {path:'/',component:home},
+//         {path:'/parent',component:parent},
+//         {path:'/transition',component:Transition},
+//         {
+//             path:'/hook',
+//             component:hook,
+//             beforeEnter:(to,from,next)=>{
+//                 console.log(to)
+//                 console.log(from)
+//                 next() //可以  next(false) 不可以   next()一定要写 不然不会进入路由,()内可以传入参数eg:path:'./'
+//             }
+//         }
+//     ]
+// })
+// //过渡动画与路由钩子
+// new Vue({
+//     router,
+//     data(){
+//         return{
+//             animate: 'fade'
+//         }
+//     },
+//     template: `
+//         <div id="app">
+//             <h1>This is transition</h1>
+//             <ul>
+//                 <li><router-link to="/">/home-slideUp</router-link></li>
+//                 <li><router-link to="/parent">/parent-slideDown</router-link></li>
+//                 <li><router-link to="/transition">/transition</router-link></li>
+//                 <li><router-link to="/hook">/钩子</router-link></li>
+//             </ul>
+//             <button @click="backHome">返回Home</button>
+//             <button @click="query">queryHome</button>
+//             <transition :name="animate" mode="out-in">
+//                 <router-view></router-view>
+//             </transition>
+//         </div>
+//     `,
+//     watch: {
+//         '$route'(to,from){
+//             console.log(to)
+//             console.log(from)
+//             if(to.path == '/parent'){
+//                 this.animate = 'slideDown';
+//                 console.log("slideDown")
+//             }else if(to.path == '/'){
+//                 this.animate = 'slideUp';
+//                 console.log("slideUp")
+//             }else{
+//                 this.animate = 'fade';
+//                 console.log("fade")
+//             }
+//         }
+//     },
+//     methods: {
+//         backHome(){
+//             router.push({path:'/'})
+//         },
+//         query(){
+//             router.push({path:'/',query:{a:1,b:2}})
+//         }
+//     }
+// }).$mount("#app")
 
 //第四次例子
 // const home = { template: '<div>home 内容</div>' }

@@ -1,8 +1,15 @@
 // The Vue build version to load with the `import` command
 // (runtime-only or standalone) has been set in webpack.base.conf with an alias.
 import Vue from 'vue'
-// import App from './App'
+
 import router from './Router'
+
+//axios
+// import axios from '../axios'
+// new Vue({
+//     el:'#app',
+//     render: xx => xx(axios)
+// })
 
 
 //生命周期
@@ -31,6 +38,7 @@ import router from './Router'
 // Vue.config.productionTip = false  //关闭生产模式下给出的提示
 
 //init原始vue创建模板
+// import App from './App'
 /* eslint-disable no-new */
 // new Vue({
 //   el: '#app',

@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <script src="../node_modules/axios/dist/axios.js"></script>
+    <script src="../node_modules/vue/dist/vue.js"></script>
+    <title>Document</title>
+</head>
+<body>
+    <div id="app5">
+        <h1>axios插件详解</h1>
+        <a href="javascipt:;" class="btn" @click="get">Get请求</a>
+        <a href="javascipt:;" class="btn" @click="post">Post请求</a>
+        <a href="javascipt:;" class="btn" @click="http">请求</a>
+        <div>
+            <span>{{msg}}</span>
+        </div>
+    </div>
+    <script>
+        new Vue({
+             el: '#app5',
+             data: {
+                 msg: ''
+             },
+             mounted() {
+                 //全局拦截器
+                 axios.interceptors.request.use(function(config){
+                    console.log('request init.');
+                    return config;
+                 }),
+                 axios.interceptors.response.use(function(response){
+                    console.log('response init.');
+                    return response;
+                 })
+             },
+             methods: {
+                 get: function(){
+                    axios.get('../package.json',{
+                        params: {
+                            userId: '999'
+                        },//get方法数据要放在params里
+                        headers: {
+                            token: "jump"
+                        }
+                    }).then(res=>{
+                        this.msg = res.data;
+                        console.log('data')
+                    }).catch(error=>{
+                        console.log('error is'+error)
+                    })
+                 },
+                 post: function(){
+                     axios.post('../package.json',{
+                         userId: '888'
+                     },{
+                         hearders: {
+                             token: 'jump2'
+                         }
+                     }).then(res=>{
+                         this.msg = res.data;
+                     }).catch(error=>{
+                         console.log('error is'+error)
+                     })
+                 },
+                 http:function(){
+                     axios({
+                         url: '../package.json',
+                        //  method: 'get',
+                        //  params: {
+                        //      userId: '111',
+                        //  },
+                         method: 'post',
+                         data: {
+                             userId: '111',
+                         },
+                         headers: {
+                             token: 'htp-test'
+                         }
+                     }).then(res=>{
+                         this.msg = res.data
+                     }).catch(error=>{
+                         console.log(error)
+                     })
+                 }
+             }
+        })
+    </script>
+</body>
+</html>

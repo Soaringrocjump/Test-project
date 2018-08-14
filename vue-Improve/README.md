@@ -1,7 +1,7 @@
 # vue_test2
 
 > A Vue.js project
-
+vue2.0  路由传参，动画过渡，vuex状态控制，组件生命周期，axios 学习demo
 ## Build Setup
 
 ``` bash

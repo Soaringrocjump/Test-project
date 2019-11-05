@@ -1,4 +1,4 @@
-<!--  -->
+<!-- 测试2 -->
 <template>
   <div class="Vue">
     This is a Vue component2.

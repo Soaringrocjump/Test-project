@@ -1,7 +1,7 @@
 <!-- 测试2 -->
 <template>
   <div class="Vue">
-    This is a Vue component2. test
+    This is a Vue component2. testtest
   </div>
 </template>
 
